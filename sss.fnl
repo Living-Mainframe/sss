@@ -52,6 +52,13 @@
               (.. "printf '\\e]11;#" server.bg "\\e\\\\'\n")
               "printf '\\e]111\\e\\\\'\n")))
 
+(fn set-fg [action server]
+  "Returns the command to (re)set the terminal foreground color if requested"
+  (when-str server.fg
+            (if (= action :set)
+              (.. "printf '\\e]10;#" server.fg "\\e\\\\'\n")
+              "printf '\\e]110\\e\\\\'\n")))
+
 (fn ssh [server]
   "Returns the command to connect to `server` using ssh"
   (.. (when-str server.pass
@@ -84,6 +91,7 @@
          (when-str (and server.ibmcloud server.ibmcloud.stop)
                    (ibmcloud :stop server))
          (set-bg :reset server)
+         (set-fg :reset server)
          (when-str server.post
                    server.post "\n")
          "rm \"$0\"\n"
@@ -91,7 +99,9 @@
          "trap cleanup EXIT HUP\n\n"
 
          ;; prepare connection
-         (set-bg :set server) (ibmcloud :start server)
+         (set-bg :set server)
+         (set-fg :set server)
+         (ibmcloud :start server)
          (nm-connect :up server)
          (when-str server.pre
                    server.pre "\n")
