@@ -112,6 +112,10 @@
                    "echo 'sleeping " server.sleep " ...'\n"
                    "sleep " server.sleep "\n\n")
 
+         ;; show password ?
+         (when-str server.pass
+           "printf '\\npassword: \\e[7;8m" server.pass "\\e[0m\\n\\n'\n")
+
          ;; connect to server
          ((match server.type
             nil ssh
