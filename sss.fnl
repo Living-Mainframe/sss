@@ -19,6 +19,7 @@
 (local config (require :config))
 
 (local servers (or config.servers {}))
+(local default (or config.default {}))
 (local usage (.. "usage: " (. arg 0) " server"))
 
 (macro when-str [condition ...]
@@ -129,7 +130,9 @@
 
 (let [s (. arg 1)]
   (if (. servers s)
-      (connect (. servers s))
+      (let [server (. servers s)]
+        (setmetatable server {:__index (fn [_ key] (. default key))})
+        (connect server))
       (do
         (print usage)
         (print)

@@ -1,6 +1,12 @@
 ;;; sss example config
 ;; all parameters are optional, unless specified
-{:servers
+
+{;; when a server doesn't have a setting, the value from the default table is used
+ ;; this table is optional
+ :default {:bg :123456}
+
+ ;; the servers table contains all ssh and 3270 servers
+ :servers
   {:example1 {:ip :1.2.3.4      ; or hostname (required)
               :user :root       ; ssh username
               :pass :adcdd      ; ssh password
