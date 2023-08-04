@@ -8,7 +8,8 @@ Features:
 - enter a password using ``sshpass``
 
 ## Installation
-Install Fennel and copy ``sss.fnl`` to a location in your ``$PATH``.
+1. Install Fennel and copy ``sss.fnl`` to a location in your ``$PATH``.
+2. If you want to enable autocompletion, add ``eval $(sss.fnl --autocomplete)`` to your ``~/.bashrc`` or ``~/.zshrc``
 
 ## Configuration and usage
 1. copy ``config.fnl`` to ``$XDG_CONFIG_HOME/sss/config.fnl`` or ``$HOME/.config/sss/config.fnl``.

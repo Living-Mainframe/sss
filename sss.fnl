@@ -20,7 +20,6 @@
 
 (local servers (or config.servers {}))
 (local default (or config.default {}))
-(local usage (.. "usage: " (. arg 0) " server"))
 
 (macro when-str [condition ...]
   "If `condition` is true concatenate `...`, else return an empty string"
@@ -129,12 +128,28 @@
       (os.execute (.. "sh " tmpfile)))))
 
 (let [s (. arg 1)]
-  (if (. servers s)
-      (let [server (. servers s)]
-        (setmetatable server {:__index (fn [_ key] (. default key))})
-        (connect server))
-      (do
-        (print usage)
-        (print)
-        (each [s (pairs servers)]
-          (print s)))))
+  (if
+    (= s :--autocomplete)
+    (do
+      (print
+        (..
+          "complete -W '"
+          (accumulate [server-list "" server (pairs servers)]
+            (.. server-list " " server))
+          "' "
+          (string.gsub
+            (. arg 0)
+            ".*/"
+            ""))))
+
+    (. servers s)
+    (let [server (. servers s)]
+      (setmetatable server {:__index (fn [_ key] (. default key))})
+      (connect server))
+
+    :else
+    (do
+      (print (.. "usage: " (. arg 0) " server"))
+      (print)
+      (each [s (pairs servers)]
+        (print s)))))
