@@ -42,8 +42,45 @@
 
 (fn nm-connect [action server]
   "Returns the command to enable/disable a NetworkManager connection if required"
-  (when-str server.vpn
-            "nmcli connection " action " " server.vpn "\n"))
+  (match (type server.vpn)
+    :nil    ""
+
+    :string
+    (match action
+      :up
+      (.. "nmcli connection show --active | grep -F " server.vpn
+          " || nmcli connection up " server.vpn "\n")
+      :down
+      (.. "nmcli connection down " server.vpn "\n"))
+
+    :table
+    (if
+      (and (= :up action)
+           server.vpn.up)
+      (if
+        (= :table (type server.vpn.check))
+        (do ; check if any of the listed connections is up, else start the vpn
+          (table.insert server.vpn.check server.vpn.up)
+          (..
+            (table.concat
+              (icollect [_ connection (ipairs server.vpn.check)]
+                (.. "nmcli connection show --active | grep -F " connection))
+              " || ")
+            " || nmcli connection up " server.vpn.up  "\n"))
+        ;; else
+        (.. "nmcli connection show --active | grep -F " server.vpn.up
+            " || nmcli connection up " server.vpn.up  "\n"))
+
+      (and (= :down action) ; stop vpn?
+           (= :string (type server.vpn.down)))
+      (.. "nmcli connection down " server.vpn.down "\n")
+
+      (and (= :down action) ; stop vpn?
+           (= true (type server.vpn.down)))
+      (.. "nmcli connection down " server.vpn.up "\n")
+
+      ;; else
+      "")))
 
 (fn set-bg [action server]
   "Returns the command to (re)set the terminal background color if requested"
@@ -130,17 +167,16 @@
 (let [s (. arg 1)]
   (if
     (= s :--autocomplete)
-    (do
-      (print
-        (..
-          "complete -W '"
-          (accumulate [server-list "" server (pairs servers)]
-            (.. server-list " " server))
-          "' "
-          (string.gsub
-            (. arg 0)
-            ".*/"
-            ""))))
+    (print
+      (..
+        "complete -W '"
+        (accumulate [server-list "" server (pairs servers)]
+          (.. server-list " " server))
+        "' "
+        (string.gsub
+          (. arg 0)
+          ".*/"
+          "")))
 
     (. servers s)
     (let [server (. servers s)]

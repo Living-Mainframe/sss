@@ -14,6 +14,10 @@
               :env :TERM=xterm  ; modify the environment
               :opts ""          ; additional ssh options
               :vpn :ExampleVPN} ; start this NetworkManager connection
+   :example2 {:ip :exmaple2.example
+              :vpn {:up "vpn"                            ; start this NetworkManager connection,
+                    :check ["connection1" "connection2"] ; (optional) but not if any of these connections are active
+                    :down "vpn"}}                        ; (optional) stop this connection when disconnectng, true=started connection
    :3270 {:ip :zos.example          ; required
           :type :c3270              ; required to use c3270 for this connection
           :opts "3270 -defaultfgbg" ; additional c3270 options
