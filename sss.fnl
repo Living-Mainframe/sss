@@ -87,14 +87,14 @@
   (when-str server.bg
             (if (= action :set)
               (.. "printf '\\e]11;#" server.bg "\\e\\\\'\n")
-              "printf '\\e]111\\e\\\\'\n")))
+              "printf '\\e]111;\\e\\\\'\n")))
 
 (fn set-fg [action server]
   "Returns the command to (re)set the terminal foreground color if requested"
   (when-str server.fg
             (if (= action :set)
               (.. "printf '\\e]10;#" server.fg "\\e\\\\'\n")
-              "printf '\\e]110\\e\\\\'\n")))
+              "printf '\\e]110;\\e\\\\'\n")))
 
 (fn ssh [server]
   "Returns the command to connect to `server` using ssh"
