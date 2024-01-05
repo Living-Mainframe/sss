@@ -3,7 +3,8 @@
 
 {;; when a server doesn't have a setting, the value from the default table is used
  ;; this table is optional
- :default {:bg :123456}
+ :default {:bg :123456
+           :opts "-o StrictHostKeyChecking=accept-new"} ; automatically accept new hosts
 
  ;; the servers table contains all ssh and 3270 servers
  :servers
