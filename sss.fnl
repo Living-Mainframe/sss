@@ -115,7 +115,7 @@
                 server.opts " ")
       "\n"))
 
-(fn connect [server]
+(fn connect [server ?debug]
   "Create and run a shell script to connect to `server`"
   (let [command
         (..
@@ -162,9 +162,10 @@
     (let [tmpfile (os.tmpname)]
       (with-open [out (io.open tmpfile :w)]
         (out:write command))
-      (os.execute (.. "sh " tmpfile)))))
+      (os.execute (.. (if ?debug "cat " "sh ") tmpfile)))))
 
-(let [s (. arg 1)]
+(let [?debug (= :--debug (. arg 1))
+      s      (if ?debug (. arg 2) (. arg 1))]
   (if
     (= s :--autocomplete)
     (print
@@ -181,7 +182,7 @@
     (. servers s)
     (let [server (. servers s)]
       (setmetatable server {:__index (fn [_ key] (. default key))})
-      (connect server))
+      (connect server ?debug))
 
     :else
     (do
