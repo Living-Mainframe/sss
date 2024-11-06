@@ -98,9 +98,12 @@
 
 (fn ssh [server]
   "Returns the command to connect to `server` using ssh"
-  (.. (when-str server.pass
+  (.. (when-str (and server.pass
+                     (not server.no-sshpass))
                 "sshpass -p '" server.pass "' ")
-      "ssh "
+      (if server.ssh
+        (.. server.ssh " ")
+        "ssh ")
       (when-str server.opts
                 server.opts " ")
       (when-str server.user
